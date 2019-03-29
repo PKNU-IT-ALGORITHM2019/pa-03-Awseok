@@ -231,12 +231,12 @@ int QuickSort(int data[], int p, int r)
 	return clock() - clock_a;
 }
 
-int Partition1(int data[], int p, int r)
+int Partition1(int data[], int p, int r) // pivotì´ ëê°’ì¼ë•Œ
 {
 
 	int i = p - 1, j = p;
 
-	for (j; j < r; j++) // pivotÀÌ ³¡°ªÀÏ¶§ 100,000°³°¡ ³Ñ¾î°¡¸é ½ºÅÃ ¿À¹öÇÃ·Î¿ì
+	for (j; j < r; j++) 
 	{
 		if (data[j] >= data[r]);
 		else
@@ -250,10 +250,10 @@ int Partition1(int data[], int p, int r)
 	return i + 1;
 }
 
-int Partition2(int data[], int p, int r)
+int Partition2(int data[], int p, int r) // median of three
 {
 
-	int i = p - 1, j = p, mid = 0; // median of three
+	int i = p - 1, j = p, mid = 0; 
 
 	mid = (p + r) / 2;
 	mid = medianofthree(data, p, mid, r);
@@ -274,7 +274,7 @@ int Partition2(int data[], int p, int r)
 	return i + 1;
 }
 
-int Partition3(int data[], int p, int r)
+int Partition3(int data[], int p, int r) // random
 {
 	int i = p - 1, j = p, pivot = 0;
 
