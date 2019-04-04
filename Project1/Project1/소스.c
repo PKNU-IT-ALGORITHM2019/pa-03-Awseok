@@ -216,16 +216,12 @@ double QuickSort(int data[], int p, int r, int check_qNum)
 	return (double)(clock() - clock_a) / 1000;
 }
 
-int Partition1(int data[], int p, int r) // pivot???앷컪?쇰븣
+int Partition1(int data[], int p, int r)
 {
 
 	int i = p - 1, j = p;
 
-<<<<<<< HEAD
 	for (j; j < r; j++) // pivot이 끝값일때 100,000개
-=======
-	for (j; j < r; j++) 
->>>>>>> d3963f812722c1ebb50942c5ef9b80cad49ad6af
 	{
 		if (data[j] >= data[r]);
 		else
