@@ -21,57 +21,32 @@ clock_t clock_a;
 void copy_arr();
 void random_arr();
 void reverse_arr();
-int Bubble(int data[], int size);
-int Selection(int data[], int size);
-int Insertion(int data[], int size);
-int MergeSort(int data[], int p, int r);
+double Bubble(int data[], int size);
+double Selection(int data[], int size);
+double Insertion(int data[], int size);
+double MergeSort(int data[], int p, int r);
 void Merge(int data[], int p, int q, int r);
-int QuickSort(int data[], int p, int r);
+double QuickSort(int data[], int p, int r, int check_qNum);
 int Partition1(int data[], int p, int r);
 int Partition2(int data[], int p, int r);
 int Partition3(int data[], int p, int r);
 int rand_pivot(int p, int r);
 int medianofthree(int data[], int p, int mid, int r);
 void swap(int data[], int i, int j);
+void build_max_heap(int data[], int size);
+void max_heapify(int data[], int ind, int size);
+double heap_sort(int data[], int size);
+int cmp_fun(const void *p, const void *q);
+double qsorting(void *arr, int size);
 void print(int data[], int size);
 void print_result();
-void get_Bubble(int ind);
-void get_Selection(int ind);
-void get_Insertion(int ind);
-void get_Merge(int ind);
-void get_Quick(int ind);
+void sort();
 
 int main()
 {
 	system("mode con cols=120 lines=50");
 
-	random_arr();
-
-	copy_arr();
-	
-	get_Bubble(0);
-
-	get_Selection(0);
-
-	get_Insertion(0);
-
-	get_Merge(0);
-
-	get_Quick(0);
-
-	reverse_arr();
-
-	copy_arr();
-
-	get_Bubble(1);
-
-	get_Selection(1);
-
-	get_Insertion(1);
-
-	get_Merge(1);
-
-	get_Quick(1);
+	sort();
 
 	print_result();
 
@@ -122,10 +97,12 @@ void reverse_arr()
 }
 
 
-int Bubble(int data[], int size)
+double Bubble(int data[], int size)
 {
 	int i, j, cnt = size;
 	
+	clock_a = clock();
+
 	for (i = 0; i < size; i++)
 	{
 		for (j = 1; j < cnt; j++)
@@ -134,24 +111,28 @@ int Bubble(int data[], int size)
 		cnt--;
 	}
 
-	return clock() - clock_a;
+	return (double)(clock() - clock_a) / 1000;
 }
 
-int Insertion(int data[], int size)
+double Insertion(int data[], int size)
 {
 	int i, j;
+
+	clock_a = clock();
 
 	for (i = 1; i < size; i++)
 		for (j = 0; j < i; j++)
 			if (data[i] < data[j])
 				swap(data, i, j);
 
-	return clock() - clock_a;
+	return (double)(clock() - clock_a) / 1000;
 }
 
-int Selection(int data[], int size)
+double Selection(int data[], int size)
 {
 	int i, j, temp, temp_i;
+
+	clock_a = clock();
 
 	for (i = size - 1; i > 0; i--)
 	{
@@ -168,12 +149,14 @@ int Selection(int data[], int size)
 		swap(data, temp_i, i);
 	}
 
-	return clock() - clock_a;
+	return (double)(clock() - clock_a) / 1000;
 }
 
-int MergeSort(int data[], int p, int r)
+double MergeSort(int data[], int p, int r)
 {
 	int q;
+
+	clock_a = clock();
 
 	if (p < r)
 	{
@@ -183,7 +166,7 @@ int MergeSort(int data[], int p, int r)
 		Merge(data, p, q, r);
 	}
 
-	return clock() - clock_a;
+	return (double)(clock() - clock_a) / 1000;
 }
 
 void Merge(int data[], int p, int q, int r)
@@ -205,30 +188,32 @@ void Merge(int data[], int p, int q, int r)
 		data[i] = temp[i];
 }
 
-int QuickSort(int data[], int p, int r)
+double QuickSort(int data[], int p, int r, int check_qNum)
 {
 	int q;
+
+	clock_a = clock();
 
 	if (p < r && check_qNum == 0)
 	{
 		q = Partition1(data, p, r);
-		QuickSort(data, p, q - 1);
-		QuickSort(data, q + 1, r);
+		QuickSort(data, p, q - 1, check_qNum);
+		QuickSort(data, q + 1, r, check_qNum);
 	}
 	else if (p < r && check_qNum == 1)
 	{
 		q = Partition2(data, p, r);
-		QuickSort(data, p, q - 1);
-		QuickSort(data, q + 1, r);
+		QuickSort(data, p, q - 1, check_qNum);
+		QuickSort(data, q + 1, r, check_qNum);
 	}
 	else if (p < r && check_qNum == 2)
 	{
 		q = Partition3(data, p, r);
-		QuickSort(data, p, q - 1);
-		QuickSort(data, q + 1, r);
+		QuickSort(data, p, q - 1, check_qNum);
+		QuickSort(data, q + 1, r, check_qNum);
 	}
 
-	return clock() - clock_a;
+	return (double)(clock() - clock_a) / 1000;
 }
 
 int Partition1(int data[], int p, int r)
@@ -236,7 +221,7 @@ int Partition1(int data[], int p, int r)
 
 	int i = p - 1, j = p;
 
-	for (j; j < r; j++) // pivot이 끝값일때 100,000개가 넘어가면 스택 오버플로우
+	for (j; j < r; j++) // pivot이 끝값일때 100,000개
 	{
 		if (data[j] >= data[r]);
 		else
@@ -325,6 +310,66 @@ void swap(int data[], int i, int j)
 	data[i] = temp;
 }
 
+void max_heapify(int data[], int ind, int size)
+{
+	int k = 2 * ind;
+
+	if (k > size)
+		return;
+
+	if (k + 1 <= size)
+		if (data[k] < data[k + 1])
+			k++;
+
+	if (data[ind] >= data[k])
+		return;
+
+	swap(data, ind, k);
+
+	max_heapify(data, k, size);
+}
+
+void build_max_heap(int data[], int size)
+{
+	int i;
+
+	for (i = size / 2; i >= 0; i--)
+		max_heapify(data, i, size);
+}
+
+double heap_sort(int data[], int size)
+{
+	int i;
+
+	clock_a = clock();
+	build_max_heap(data, size);
+
+	for (i = size; i > 0; i--)
+	{
+		swap(data, 0, i);
+		max_heapify(data, 0, i - 1);
+	}
+
+	return (double)(clock() - clock_a) / 1000;
+}
+
+int cmp_fun(const void *p, const void *q)
+{
+	if (*(int*)p < *(int*)q)
+		return -1;
+	else if (*(int *)p == *(int *)q)
+		return 0;
+	else
+		return 1;
+}
+
+double qsorting(void *arr, int size)
+{
+	clock_a = clock();
+	qsort(arr, size, sizeof(arr), cmp_fun);
+	return (double)(clock() - clock_a) / 1000;
+}
+
 void print(int data[], int size)
 {
 	int i;
@@ -385,137 +430,70 @@ void print_result()
 	}
 }
 
-void get_Bubble(int ind)
+void sort()
 {
-	int res, i;
+	int size, *arr, i, j,ind;
 
-	for (i = 0, res = 0; i < 10; i++)
+	for (i = 0; i < 6; i++)
 	{
-		clock_a = clock();
-		res += Bubble(data1_cmp, data_size1);
-	}
-	result[0][ind] = (double)res / (1000 * 10);
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Bubble(data2_cmp, data_size2);
-	}
-	result[0][2 + ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Bubble(data3_cmp, data_size3);
-	}
-	result[0][2 + ind] = (double)res / 10000;
-}
-
-void get_Selection(int ind)
-{
-	int res, i;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Selection(data1_cmp, data_size1);
-	}
-	result[1][ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Selection(data2_cmp, data_size2);
-	}
-	result[1][2 + ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Selection(data3_cmp, data_size3);
-	}
-	result[1][4 + ind] = (double)res / 10000;
-}
-
-void get_Insertion(int ind)
-{
-	int res, i;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Insertion(data1_cmp, data_size1);
-	}
-	result[2][ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Insertion(data2_cmp, data_size2);
-	}
-	result[2][2 + ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += Insertion(data3_cmp, data_size3);
-	}
-	result[2][4 + ind] = (double)res / 10000;
-}
-
-void get_Merge(int ind)
-{
-	int i, res;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += MergeSort(data1_cmp, 0, data_size1 - 1);
-	}
-	result[3][0 + ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += MergeSort(data2_cmp, 0, data_size2 - 1);
-	}
-	result[3][2 + ind] = (double)res / 10000;
-
-	for (i = 0, res = 0; i < 10; i++)
-	{
-		clock_a = clock();
-		res += MergeSort(data3_cmp, 0, data_size3 - 1);
-	}
-	result[3][4 + ind] = (double)res / 10000;
-}
-
-void get_Quick(int ind)
-{
-	int i, j, res;
-
-	for (j = 0; j < 3; j++)
-	{
-		for (i = 0, res = 0; i < 10; i++)
+		switch (i)
 		{
-			clock_a = clock();
-			res += QuickSort(data1_cmp, 0, data_size1 - 1);
+		case 0:
+			random_arr();
+			arr = data1_cmp;
+			size = data_size1;
+			break;
+		case 1:
+			arr = data2_cmp;
+			size = data_size2;
+			break;
+		case 2:
+			arr = data3_cmp;
+			size = data_size3;
+			break;
+		case 3:
+			reverse_arr();
+			arr = data1_cmp;
+			size = data_size1;
+			break;
+		case 4:
+			arr = data2_cmp;
+			size = data_size2;
+			break;
+		case 5:
+			arr = data3_cmp;
+			size = data_size3;
+			break;
 		}
-		result[4 + j][0 + ind] = (double)res / 10000;
 
-		check_qNum = 1;
-		for (i = 0, res = 0; i < 10; i++)
+		for (j = 0; j < 10; j++)
 		{
-			clock_a = clock();
-			res += QuickSort(data2_cmp, 0, data_size2 - 1);
-		}
-		result[4 + j][2 + ind] = (double)res / 10000;
+			ind = 0;
 
-		check_qNum = 2;
-		for (i = 0, res = 0; i < 10; i++)
-		{
-			clock_a = clock();
-			res += QuickSort(data3_cmp, 0, data_size3 - 1);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += Bubble(arr, size);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += Selection(arr, size);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += Insertion(arr, size);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += MergeSort(arr, 0, size - 1);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += QuickSort(arr, 0, size - 1, 0);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += QuickSort(arr, 0, size - 1, 1);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += QuickSort(arr, 0, size - 1, 2);
+			copy_arr();
+			result[ind++][(i + 2) % 6] += heap_sort(arr, size - 1);
+			copy_arr();
+			result[ind][(i + 2) % 6] += qsorting(arr, size);
 		}
-		result[4 + j][4 + ind] = (double)res / 10000;
+	}
+
+	for (i = 0; i < 9; i++)
+	{
+		for (j = 0; j < 6; j++)
+			result[i][j] /= 10;
 	}
 }
